@@ -1,0 +1,52 @@
+---
+title: "p8105_hw2_hy2580"
+author: "haokun yuan"
+date: "10/10/2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(p8105.datasets)
+```
+
+##Problem 1
+
+Import and clean data
+```{r}
+brfss_overallhealth = brfss_smart2010 %>%
+  janitor::clean_names() %>% 
+  # focused on Overall Health topic
+  # checked response with distinct(), no pre-collapsed categories
+  filter (topic == "Overall Health") %>% 
+  # take levels form excellent to poor by factorize response
+  mutate(response = as.factor(response))
+```
+
+Find states were observed at 7 locations in 2002
+```{r}
+brfss_overallhealth %>% 
+  filter(year == 2002) %>%
+  distinct(locationabbr,locationdesc) %>% 
+  count(locationabbr) %>% 
+  filter(n == 7)
+```
+
+Make a spaghetti plot for number of observations in each state from 2002 to 2010
+```{r}
+brfss_overallhealth %>% 
+  distinct(locationabbr,locationdesc, year) %>% 
+  group_by(year) %>% 
+  count(locationabbr) %>% 
+  ggplot(aes( x = year, y = n, color = locationabbr)) +
+  geom_line() + 
+  labs(x = "Year", y = "Number of Observations", title = "Number of Observations in States (U.S.)", subtitle = "(2002-2010)")
+
+```
+
+```{r}
+instacart = instacart
+
+```
+
