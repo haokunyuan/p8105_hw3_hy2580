@@ -19,9 +19,9 @@ brfss_overallhealth = brfss_smart2010 %>%
   janitor::clean_names() %>% 
   # focused on Overall Health topic
   # checked response with distinct(), no pre-collapsed categories
-  filter (topic == "Overall Health") %>% 
+  filter(topic == "Overall Health") %>% 
   # take levels form excellent to poor by factorize response
-  mutate(response = as.factor(response))
+  mutate(response = factor(response))
 ```
 
 Find states were observed at 7 locations in 2002
@@ -36,8 +36,7 @@ brfss_overallhealth %>%
 Make a spaghetti plot for number of observations in each state from 2002 to 2010
 ```{r}
 brfss_overallhealth %>% 
-  distinct(locationabbr,locationdesc, year) %>% 
-  group_by(year) %>% 
+  group_by(year,locationabbr) %>% 
   count(locationabbr) %>% 
   ggplot(aes( x = year, y = n, color = locationabbr)) +
   geom_line() + 
@@ -45,8 +44,99 @@ brfss_overallhealth %>%
 
 ```
 
+Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.
 ```{r}
-instacart = instacart
+brfss_overallhealth %>% 
+  filter(year %in% c(2002, 2006, 2010),
+         response == "Excellent",
+         locationabbr == "NY") %>%
+  group_by(year) %>%
+  summarise(mean(data_value),
+            sd(data_value)) %>% 
+  knitr::kable()
+```
+
+For each year and state, compute the average proportion in each response category (taking the average across locations in a state). Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.
+
+```{r}
+ave_prop_loca = brfss_overallhealth %>% 
+  group_by(locationabbr,year,response) %>% 
+  mean(data_value)
+  
+
+brfss_overallhealth %>%  
+  ggplot(aes(x = response, ave_prop_loca)) + 
+  geom_boxplot()
+
+```
+
+##Problem2
+This problem uses the Instacart data. DO NOT include this dataset in your local data directory; instead, load the data from the p8105.datasets package (it’s called instacart).
+
+The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. Then, do or answer the following (commenting on the results of each):
+```{r}
+instacart_tidy = instacart %>%
+  janitor::clean_names() %>% 
+  na.omit()
+```
+
+How many aisles are there, and which aisles are the most items ordered from?
+
+```{r}
+instacart_tidy %>% 
+  distinct(aisle) %>% 
+  nrow()
+
+instacart_tidy %>% 
+  count(aisle) %>% 
+  arrange(desc(n))
+```
+
+Make a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it.
+
+```{r}
+
+```
+
+Make a table showing the most popular item in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”.
+
+
+```{r}
+instacart_tidy %>% 
+  filter(aisle %in% c("baking ingredients","dog food care","packaged vegetables fruits")) %>% 
+  group_by(aisle) %>% 
+  count(product_name) %>% 
+  top_n(1,n) %>% 
+  knitr::kable()
+```
+
+Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
+
+```{r}
+
+```
+This problem uses the NY NOAA data. DO NOT include this dataset in your local data directory; instead, load the data from the p8105.datasets package (it’s called ny_noaa).
+
+The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and indicating the extent to which missing data is an issue. Then, do or answer the following (commenting on the results of each):
+##Problem 3
+
+```{r}
+
+```
+
+
+Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?
+```{r}
+
+```
+
+Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
+```{r}
+
+```
+
+Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
+```{r}
 
 ```
 
